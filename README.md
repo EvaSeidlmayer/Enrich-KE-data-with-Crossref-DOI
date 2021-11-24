@@ -5,8 +5,9 @@ Enrichment of ZB MED Knowledge Environment data with Crossref DOI
 ## goal: deduplication of KE data by DOI
 
 # download current dump of ZB MED KE database
+```
  mongoexport --host="10.0.4.174" --db=livivo --collection=livivodata --out=zbmedke_20211029.json
-
+``` 
 # set up of crossref database
 1. download crossref: 112+ Million records https://academictorrents.com/details/e4287cb7619999709f6e9db5c359dda17e93d515
 2. set up postgres data base; we have it on VM Kinakuta and on VM Elysium
@@ -70,16 +71,23 @@ M28372829,10.1016/j.socscimed.2017.03.058,"""10.1016/j.socscimed.2017.03.058""",
 ```
 
 3. comparison of DOI from KE and retrieved DOI from crossref database 
+```
 python3 harvesting_crossref_evaluation.py
+```
+
 The input is hard coded. 
-since single DOI/title/dbrecordid refers to journals, one title returns very many entries with very many DOI. 
-In order to avoid this, having one dbrecordid with dozens of crossref DOI, we excluded row with dbrecordids which appeared more than once from the results.
-It was noticed that DOI hab been writen with capital letters and sometimes with lower cases. To avoid any inconsitencies due to upper oder lower case, all DOIs turned to lowercase. 
-We than set the condition of the same publication year. 
-based on these conditions we compared the DOIs from KE with those retrieved from Crossref:
+
+- Since single DOI/title/dbrecordid refers to journals, one title returns very many entries with very many DOI. In order to avoid this, having one dbrecordid with dozens of crossref DOI, we excluded row with dbrecordids which appeared more than once from the results.
+- It was noticed that DOI hab been writen with capital letters and sometimes with lower cases. To avoid any inconsitencies due to upper oder lower case, all DOIs turned to lowercase. 
+- We than set the condition of the same publication year. 
+Based on these conditions we compared the DOIs from KE with those retrieved from Crossref:
+
 result:
-" 21849 titles are in the file
+
+```
+1849 titles are in the file
 number same print years 19322
 number of unequal print years 2527
-of those who have same years 19197 have same DOIs, this is 0.99353069040472 percentage
-of those who have same years 125 have not same DOIS, this is  0.0064693095952799914 percentage "
+of those who have same years 19197 have same DOIs, this is 99.353069040472 percentage
+of those who have same years 125 have not same DOIS, this is  00.64693095952799914 percentage
+```
