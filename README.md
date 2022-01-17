@@ -25,9 +25,11 @@ INSERT INTO public.crossref_data (title, doi, published_print, published_online,
 
 # Productive work
 1. Harvesting of titles from KE for single sortyears
+
+```
 python3 harvest_KE_for-no-doi.py zbmedke_20211029.json --filter-year years-for-harvesting.txt -o 2018
 years-for-harvesting.txt containes in this case "2018"
-
+```
 result:
 ```
 dbrecordid,identifier,authors,title,sortyear,publyear,publisher
@@ -36,9 +38,10 @@ BASE::ftagecon:oai:ageconsearch.umn.edu:252967,,"['Wang, Youzhi', 'Delgado, Mich
 ```
 
 2. Harvesting crossref 
+```
 python3 crossref-sql.py metadata_KE_2018.csv  metadata_KE-crf_2018.csv  
-
-the program uses the SQL query to query the postgres database. the title (string) is compared to the title in the database
+```
+The program uses the SQL query to query the postgres database. the title (string) is compared to the title in the database
 ```
 f''' SELECT * FROM crossref_expand_data WHERE title LIKE '%{tit}%'; '''
 SELECT *FROM crossref_data WHERE title LIKE '%Predicting individual differences in conflict detection and bias susceptibility during reasoning%'; 
@@ -57,7 +60,9 @@ We tried to exclude those items beforehand by filtering for DOCTYPE:scientific a
 
 # Evaluation
 1. Harvesting of titles from KE for single sortyears
+```
 python3 harvest_KE_for deduplication.py zbmedke_20211029.json --filter-year years-for-harvesting.txt -0 KE_2018-for-deduplication
+```
 result:
 ```
 dbrecordid,doi_ke,identifier,authors,title,sortyear,publyear,publisher
@@ -65,7 +70,9 @@ M28220487,10.1111/1365-2656.12658,,"['Shaw, Allison K', 'Kokko, Hanna', 'Neubert
 M28240356,10.1111/1365-2656.12662,,"['Berec, Luděk', 'Kramer, Andrew M', 'Bernhauerová, Veronika', 'Drake, John M']",Density-dependent selection on mate search and evolution of Allee effects.,2018,2018,
 ```
 2. Harvesting crossref 
+```
 python3 crossref-sql.py metadata_KE_2018.csv  metadata_KE-crf_2018.csv
+```
 result:
 ```
 dbrecordid,doi_KE,doi_crossref,sortyear_KE,published_print_crf,publishd_online_crf,title
@@ -74,9 +81,9 @@ M28372829,10.1016/j.socscimed.2017.03.058,"""10.1016/j.socscimed.2017.03.058""",
 ```
 
 3. comparison of DOI from KE and retrieved DOI from crossref database 
-
+```
 python3 harvesting_crossref_evaluation.py
-
+```
 The input is hard coded. 
 
 Since single DOI/title/dbrecordid refers to journals, one title returns very many entries with very many DOI. 
@@ -87,10 +94,10 @@ We than set the condition of the same publication year.
 Based on these conditions we compared the DOIs from KE with those retrieved from Crossref:
 result:
 
-``
+```
 21849 titles are in the file
 number same print years 19322
 number of unequal print years 2527
 of those who have same years 19197 have same DOIs, this is 0.99353069040472 percentage
 of those who have same years 125 have not same DOIS, this is  0.0064693095952799914 percentage
-``
+```
