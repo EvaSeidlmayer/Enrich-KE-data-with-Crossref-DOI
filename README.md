@@ -49,10 +49,9 @@ dbrecordid,doi_crossref,sortyear_KE,publyear_KE,published_print_crf,publishd_onl
 M26698838,"""10.1016/j.ejogrb.2012.07.030""",2016.0,2016,2012,,"['Puchar, Anne', 'Feyeux, Cécile', 'Luton, Dominique', 'Koskas, Martin']","['""Henri""', '""Marret""']
 M29019353,"""10.24875/aidsrev.m17000009""",2019.0,2019,2017,2017,"['Yendewa, George A', 'Salata, Robert A']","['""George""', '""A. Yendewa""']"
 ``` 
-It is important to filter out all dbrecordid which occur more than once. Double (and more) occurence is a strong indicator 
-that  dbrecordid refers not to a scientific article but to some "letter to the editor", "Editorial" thing, or similar.
-We tried exclude those items beforehand by filtering for "DOCTYPE" "scientific article" in KE in the first place. 
-However, removing all double dbrecordid is recommended due to noisy KE-data. 
+It is important to filter out all DBRECORDID which occur more than once. Double (and more) occurence is a strong indicator 
+that  DBRECORDID refers not to a scientific article but to some "letter to the editor", "editorial" thing, or similar.
+We tried to exclude those items beforehand by filtering for DOCTYPE:scientific article in KE in the first place (harvest_KE_for-no-doi.py). However, removing all double DBRECORDID is recommended due to noisy KE data. 
 
 
 
