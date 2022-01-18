@@ -1,8 +1,8 @@
 # Enrich-KE-data-with-Crossref-DOI
 Enrichment of ZB MED Knowledge Environment data with Crossref DOI
 
-task: enrichment of KE data with crossref DOI
-goal: deduplication of KE data by DOI
+Task: enrichment of KE data with crossref DOI
+Goal: deduplication of KE data by DOI
 
 # download current dump of ZB MED KE database
  mongoexport --host="10.0.4.174" --db=livivo --collection=livivodata --out=zbmedke_20211029.json
@@ -25,12 +25,13 @@ INSERT INTO public.crossref_data (title, doi, published_print, published_online,
 
 # Productive work
 1. Harvesting of titles from KE for single sortyears
-
 ```
 python3 harvest_KE_for-no-doi.py zbmedke_20211029.json --filter-year years-for-harvesting.txt -o 2018
-years-for-harvesting.txt containes in this case "2018"
+years-for-harvesting.txt 
 ```
-result:
+year-for-harvesting.txt containes in this case just the single word "2018"
+
+Result:
 ```
 dbrecordid,identifier,authors,title,sortyear,publyear,publisher
 565896,,"['Edelstein, Emma']",Asclepius,2018,,['Johns Hopkins Press']
@@ -40,13 +41,13 @@ BASE::ftagecon:oai:ageconsearch.umn.edu:252967,,"['Wang, Youzhi', 'Delgado, Mich
 2. Harvesting crossref 
 ```
 python3 crossref-sql.py metadata_KE_2018.csv  metadata_KE-crf_2018.csv  
-```
+``` 
 The program uses the SQL query to query the postgres database. the title (string) is compared to the title in the database
 ```
 f''' SELECT * FROM crossref_expand_data WHERE title LIKE '%{tit}%'; '''
 SELECT *FROM crossref_data WHERE title LIKE '%Predicting individual differences in conflict detection and bias susceptibility during reasoning%'; 
 ```
-result:
+Result:
 ```
 dbrecordid,doi_crossref,sortyear_KE,publyear_KE,published_print_crf,publishd_online_crf,authors_KE,authors_crossref
 M26698838,"""10.1016/j.ejogrb.2012.07.030""",2016.0,2016,2012,,"['Puchar, Anne', 'Feyeux, Cécile', 'Luton, Dominique', 'Koskas, Martin']","['""Henri""', '""Marret""']
@@ -54,26 +55,25 @@ M29019353,"""10.24875/aidsrev.m17000009""",2019.0,2019,2017,2017,"['Yendewa, Geo
 ``` 
 It is important to filter out all DBRECORDID which occur more than once. Double (and more) occurence is a strong indicator 
 that  DBRECORDID refers not to a scientific article but to some "letter to the editor", "editorial" thing, or similar.
-We tried to exclude those items beforehand by filtering for DOCTYPE:scientific article in KE in the first place (harvest_KE_for-no-doi.py). However, removing all double DBRECORDID is recommended due to noisy KE data. 
+We tried to exclude those items beforehand by filtering for DOCTYPE:scientific article in KE in the first place (harvest_KE_for-no-doi.py). 
+However, removing all double DBRECORDID is recommended due to noisy KE data. 
 
 
 
 # Evaluation
 1. Harvesting of titles from KE for single sortyears
+```python3 harvest_KE_for-evaluation.py zbmedke_20211029.json --filter-year years-for-harvesting.txt -0 KE_2018-for-deduplication
 ```
-python3 harvest_KE_for deduplication.py zbmedke_20211029.json --filter-year years-for-harvesting.txt -0 KE_2018-for-deduplication
-```
-result:
+Result:
 ```
 dbrecordid,doi_ke,identifier,authors,title,sortyear,publyear,publisher
 M28220487,10.1111/1365-2656.12658,,"['Shaw, Allison K', 'Kokko, Hanna', 'Neubert, Michael G']",Sex difference and Allee effects shape the dynamics of sex-structured invasions.,2018,2018,
 M28240356,10.1111/1365-2656.12662,,"['Berec, Luděk', 'Kramer, Andrew M', 'Bernhauerová, Veronika', 'Drake, John M']",Density-dependent selection on mate search and evolution of Allee effects.,2018,2018,
 ```
 2. Harvesting crossref 
+```python3 crossref-sql.py metadata_KE_2018.csv  metadata_KE-crf_2018.csv
 ```
-python3 crossref-sql.py metadata_KE_2018.csv  metadata_KE-crf_2018.csv
-```
-result:
+3. Result:
 ```
 dbrecordid,doi_KE,doi_crossref,sortyear_KE,published_print_crf,publishd_online_crf,title
 M28372536,10.1177/1933719117699706,"""10.1177/1933719117699706""",2018,2018,2017,HoxA10 and HoxA11 Regulate the Expression of Contraction-Associated Proteins and Contribute to Regionalized Myometrium Phenotypes in Women
@@ -81,23 +81,22 @@ M28372829,10.1016/j.socscimed.2017.03.058,"""10.1016/j.socscimed.2017.03.058""",
 ```
 
 3. comparison of DOI from KE and retrieved DOI from crossref database 
-```
-python3 harvesting_crossref_evaluation.py
-```
+```python3 harvesting_crossref_evaluation.py``` 
 The input is hard coded. 
 
-Since single DOI/title/dbrecordid refers to journals, one title returns very many entries with very many DOI. 
-In order to avoid this, having one dbrecordid with dozens of crossref DOI, we excluded row with DBRECORDIDS which appeared
+Since single DOI/title/DBRECORDID refers to journals, one title returns very many entries with very many DOI. 
+In order to avoid this, having one DBRECORDID with dozens of crossref DOI, we excluded row with DBRECORDIDS which appeared
 more than once from the results. It was noticed that DOI hab been writen with capital letters and sometimes with lower 
 cases. To avoid any inconsistencies due to upper oder lower case, all DOIs turned to lowercase. 
 We than set the condition of the same publication year. 
-Based on these conditions we compared the DOIs from KE with those retrieved from Crossref:
-result:
 
-```
+Based on these conditions we compared the DOIs from KE with those retrieved from Crossref:
+Result:
+
+``
 21849 titles are in the file
 number same print years 19322
 number of unequal print years 2527
 of those who have same years 19197 have same DOIs, this is 0.99353069040472 percentage
 of those who have same years 125 have not same DOIS, this is  0.0064693095952799914 percentage
-```
+``
